@@ -1,0 +1,326 @@
+{
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Glog.AI",
+          "organization": "Glog.AI",
+          "fullName": "Glog, Making software more secure",
+          "version": "1.0.0",
+          "semanticVersion": "1.0.0",
+          "informationUri": "https://www.glog.ai",
+          "rules": [
+            {
+              "id": "glog-f0f1fc97-b7ec-4c75-bacf-d98d929e36d1",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"SQL Injection Vulnerability via String-Based Query Construction\" is a common security vulnerability in Python programming language where an attacker can inject malicious SQL code into a query. This can lead to unauthorized access to sensitive data, data manipulation, and even data loss. In the provided code snippet, the table name is directly inserted into the SQL query using string formatting, which can lead to SQL injection if the table name is user-controlled and not properly sanitized.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, avoid using string formatting to construct SQL queries. Instead, use parameterized queries or prepared statements, which can ensure that user input is always treated as literal data and not executable code. \n\n## Source Code Fix Recommendation\n\nHere is a fixed version of the provided code snippet:\n\n```python\n# Assuming 'self._table_name' is a user-controlled variable\ntable_name = self._table_name\n# Use a whitelist of valid table names to prevent SQL injection\nif table_name not in VALID_TABLE_NAMES:\n    raise ValueError(f\"Invalid table name: {table_name}\")\ncursor.execute(f\"SELECT * FROM {table_name};\")\n```\n\nIn this fixed version, we use a whitelist of valid table names to prevent SQL injection. If the table name is not in the whitelist, we raise a ValueError.\n\n## Library Dependencies\n\nThe code example requires the following library dependencies:\n\n- A Python SQL library such as `sqlite3` or `psycopg2` to provide the `cursor.execute()` method.\n\n## References\n\n- [CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')](https://cwe.mitre.org/data/definitions/89.html)"
+              },
+              "properties": {
+                "tags": [
+                  "B608"
+                ]
+              }
+            },
+            {
+              "id": "glog-066a0f01-9e3e-4bc3-b03c-fc5a6370ac16",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nThe `shell=True` subprocess call security vulnerability in Python occurs when a subprocess call with `shell=True` is used. This can lead to shell injection, a form of attack that can execute arbitrary commands and compromise the system. The attacker can inject commands via user input or manipulated files that are read by the program.\n\nIn the provided code:\n\n```python\nout = subprocess.check_output(['rocm_agent_enumerator -name'], shell=True).decode('utf8', errors='ignore').strip()\n```\n\nThe `shell=True` allows shell injection, making the code vulnerable.\n\n## Mitigation Advice\n\nAvoid using `shell=True` in subprocess calls whenever possible. If you must use it, ensure that you have properly sanitized and escaped all user inputs and file inputs that are included in the command.\n\n## Source Code Fix Recommendation\n\nHere is a safer version of the code:\n\n```python\nimport shlex\ncommand = shlex.split('rocm_agent_enumerator -name')\nout = subprocess.check_output(command).decode('utf8', errors='ignore').strip()\n```\n\nIn this version, `shlex.split()` is used to safely split the command into a list of strings. `shell=True` is removed from the `subprocess.check_output()` call, preventing shell injection.\n\n## Library Dependencies\n\nThe code example requires the following Python standard library:\n\n- `subprocess`\n- `shlex`\n\n## References\n\n- [OWASP Python Security - Command Injection](https://cheatsheetseries.owasp.org/cheatsheets/OS_Command_Injection_Defense_Cheat_Sheet.html)\n- [CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')](https://cwe.mitre.org/data/definitions/78.html)"
+              },
+              "properties": {
+                "tags": [
+                  "B602"
+                ]
+              }
+            },
+            {
+              "id": "glog-607bdd96-0604-4aaa-a4c1-45b0c9727e06",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\nSQL Injection Vulnerability via String-Based Query Construction is a common security vulnerability in Python programming language. It occurs when an application uses unsanitized user input in a database query. An attacker can manipulate the SQL query by injecting malicious SQL code via the user input, leading to unauthorized access to or manipulation of the database.\n\nIn the provided code snippet, the application is vulnerable to SQL injection because it uses string formatting to construct a SQL query with user-supplied input (`self._table_name`).\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, it is recommended to use parameterized queries or prepared statements instead of string formatting for SQL query construction. This ensures that user input is always treated as literal data and not part of the SQL command.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code snippet:\n\n```python\ntup = self._conn.execute(\"SELECT name FROM sqlite_master WHERE type='table' AND name=?\", (self._table_name,)).fetchone()\n```\n\nIn this fix, `?` is used as a placeholder for `self._table_name` in the SQL query. The actual value of `self._table_name` is passed as a tuple to the `execute` method. This ensures that `self._table_name` is treated as a literal string and not part of the SQL command, preventing SQL injection.\n\n## Library Dependencies\n\nThe code example requires the `sqlite3` library, which is included in the Python Standard Library.\n\n## References\n\n- [OWASP Python Security - SQL Injection](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)\n- [CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')](https://cwe.mitre.org/data/definitions/89.html)"
+              },
+              "properties": {
+                "tags": [
+                  "B608"
+                ]
+              }
+            },
+            {
+              "id": "glog-d853cc92-020e-4a0c-bb03-2a9d93c4063d",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Exec Usage Detected\" is a vulnerability in Python that arises when the `exec()` function is used. The `exec()` function is a built-in Python function that executes the Python code, which is passed as an argument. If the argument passed to the `exec()` function is a string that is derived from user inputs or other untrusted sources, it can lead to arbitrary code execution. This can be exploited by an attacker to execute malicious code.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, avoid using the `exec()` function whenever possible, especially with user-supplied input. If it's absolutely necessary to use `exec()`, make sure to properly sanitize and validate the input to prevent code injection attacks.\n\n## Source Code Fix Recommendation\n\nInstead of using `exec()`, consider using safer alternatives that do not execute code dynamically. For example, if you're using `exec()` to call a function, you could use a dictionary to map string names to function objects and call them directly.\n\nHere's an example of how you could refactor the code:\n\n```python\n# Instead of this:\nexec_string = \"print('Hello, world!')\"\nexec(exec_string, globals())\n\n# Do this:\nfunctions = {\"print\": print}\nfunction_name = \"print\"\nfunction_args = ('Hello, world!',)\nfunctions[function_name](*function_args)\n```\n\nIn this example, the `functions` dictionary maps string names to function objects. Instead of using `exec()`, we look up the function in the dictionary and call it directly.\n\n## Library Dependencies\n\nThe code example does not require any external library dependencies. It only uses built-in Python functions.\n\n## OWASP Resources\n\n- [OWASP Code Review Guide](https://owasp.org/www-pdf-archive/OWASP_Code_Review_Guide_v2.pdf)\n\n## Common Weakness Enumeration (CWE)\n\n- [CWE-94: Improper Control of Generation of Code ('Code Injection')](https://cwe.mitre.org/data/definitions/94.html)"
+              },
+              "properties": {
+                "tags": [
+                  "B102"
+                ]
+              }
+            },
+            {
+              "id": "glog-584014c3-a0b8-46ea-8eaf-09243a672e92",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"SQL Injection Vulnerability via String-Based Query Construction\" is a common security vulnerability in applications that use an SQL database. It occurs when an application constructs SQL statements using user-supplied input without properly sanitizing or escaping it. This allows an attacker to manipulate the SQL query to execute arbitrary SQL commands, which can lead to data theft, data loss, or even full control over the database.\n\nIn the provided Python code, the vulnerability lies in the use of an f-string to construct an SQL query with a table name that is taken from user input (`self._table_name`). This could allow an attacker to inject malicious SQL commands.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, you should avoid constructing SQL queries using string formatting or concatenation with user-supplied input. Instead, use parameterized queries or prepared statements, which can ensure that user input is properly escaped and treated as literal data, not part of the SQL command.\n\n## Source Code Fix Recommendation\n\nHere is a recommended fix for the provided code using SQLAlchemy, which supports parameterized table names:\n\n```python\nfrom sqlalchemy import text, Table, select\nfrom sqlalchemy.sql import Select\n\ntable = Table(self._table_name, self._metadata, autoload_with=self._engine)\nstmt: Select = select([table]).distinct()\nres = self._conn.execute(stmt)\n```\n\n## Library Dependencies\n\nThe code example requires the following Python libraries:\n\n- SQLAlchemy\n\n## References\n\n- [OWASP SQL Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)\n- [CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')](https://cwe.mitre.org/data/definitions/89.html)"
+              },
+              "properties": {
+                "tags": [
+                  "B608"
+                ]
+              }
+            },
+            {
+              "id": "glog-e8963ec5-4d6d-492d-b427-71e80c16e9c4",
+              "help": {
+                "text": "",
+                "markdown": "## Description\n\n\"Exec Usage Detected\" is a vulnerability in Python that arises when the `exec()` function is used. The `exec()` function is a built-in Python function that executes the Python code, which is passed as an argument. If the argument passed to the `exec()` function is a string that is derived from user inputs or other untrusted sources, it can lead to arbitrary code execution. This can be exploited by an attacker to execute malicious code.\n\n## Mitigation Advice\n\nTo mitigate this vulnerability, avoid using the `exec()` function whenever possible, especially with user-supplied input. If it's absolutely necessary to use `exec()`, make sure to properly sanitize and validate the input to prevent code injection attacks.\n\n## Source Code Fix Recommendation\n\nInstead of using `exec()`, consider using safer alternatives that do not execute code dynamically. For example, if you're using `exec()` to call a function, you could use a dictionary to map string names to function objects and call them directly.\n\nHere's an example of how you could refactor the code:\n\n```python\n# Instead of this:\nexec_string = \"print('Hello, world!')\"\nexec(exec_string, globals())\n\n# Do this:\nfunctions = {\"print\": print}\nfunction_name = \"print\"\nfunction_args = ('Hello, world!',)\nfunctions[function_name](*function_args)\n```\n\nIn this example, the `functions` dictionary maps string names to function objects. Instead of using `exec()`, we look up the function in the dictionary and call it directly.\n\n## Library Dependencies\n\nThe code example does not require any external library dependencies. It only uses built-in Python functions.\n\n## OWASP Resources\n\n- [OWASP Code Review Guide](https://owasp.org/www-pdf-archive/OWASP_Code_Review_Guide_v2.pdf)\n\n## Common Weakness Enumeration (CWE)\n\n- [CWE-94: Improper Control of Generation of Code ('Code Injection')](https://cwe.mitre.org/data/definitions/94.html)"
+              },
+              "properties": {
+                "tags": [
+                  "B102"
+                ]
+              }
+            }
+          ],
+          "language": "en-US",
+          "contents": [
+            "localizedData",
+            "nonLocalizedData"
+          ],
+          "isComprehensive": false
+        }
+      },
+      "language": "en-US",
+      "results": [
+        {
+          "ruleId": "glog-f0f1fc97-b7ec-4c75-bacf-d98d929e36d1",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "SQL Injection Vulnerability via String-Based Query Construction"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "v2python/sqlite_tuning_database.py"
+                },
+                "region": {
+                  "startLine": 48,
+                  "startColumn": 24,
+                  "endLine": 48,
+                  "endColumn": 60,
+                  "snippet": {
+                    "text": "        cursor.execute(f\"SELECT * FROM {self._table_name};\")\n"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 47,
+                  "endLine": 49,
+                  "snippet": {
+                    "text": "        cursor = self._conn.cursor()\n        cursor.execute(f\"SELECT * FROM {self._table_name};\")\n        self._column_name_to_index = { tup[0] : index for index, tup in enumerate(cursor.description) }\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_severity": "MEDIUM",
+            "issue_confidence": "MEDIUM"
+          }
+        },
+        {
+          "ruleId": "glog-066a0f01-9e3e-4bc3-b03c-fc5a6370ac16",
+          "kind": "fail",
+          "level": "error",
+          "message": {
+            "text": "Shell=True Subprocess Call Security Vulnerability Detected"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "tritonsrc/rocm_arch.py"
+                },
+                "region": {
+                  "startLine": 13,
+                  "startColumn": 11,
+                  "endLine": 13,
+                  "endColumn": 79,
+                  "snippet": {
+                    "text": "    out = subprocess.check_output(['rocm_agent_enumerator -name'], shell=True).decode('utf8', errors='ignore').strip()\n"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 12,
+                  "endLine": 14,
+                  "snippet": {
+                    "text": "def rocm_get_allarch():\n    out = subprocess.check_output(['rocm_agent_enumerator -name'], shell=True).decode('utf8', errors='ignore').strip()\n    return [line for line in out.splitlines() if not 'generic' in line ]\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_severity": "HIGH",
+            "issue_confidence": "HIGH"
+          }
+        },
+        {
+          "ruleId": "glog-607bdd96-0604-4aaa-a4c1-45b0c9727e06",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "SQL Injection Vulnerability via String-Based Query Construction"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "v2python/tuning_database.py"
+                },
+                "region": {
+                  "startLine": 101,
+                  "startColumn": 34,
+                  "endLine": 101,
+                  "endColumn": 117,
+                  "snippet": {
+                    "text": "        tup = self._conn.execute(f\"SELECT name FROM sqlite_master WHERE type='table' AND name='{self._table_name}';\").fetchone()\n"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 100,
+                  "endLine": 102,
+                  "snippet": {
+                    "text": "        self._table_name = k.KERNEL_FAMILY.upper() + '$' + k._triton_kernel_name\n        tup = self._conn.execute(f\"SELECT name FROM sqlite_master WHERE type='table' AND name='{self._table_name}';\").fetchone()\n        if tup is None:  # Table not exists\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_severity": "MEDIUM",
+            "issue_confidence": "MEDIUM"
+          }
+        },
+        {
+          "ruleId": "glog-d853cc92-020e-4a0c-bb03-2a9d93c4063d",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Exec Usage Detected"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "v2python/compile.py"
+                },
+                "region": {
+                  "startLine": 69,
+                  "startColumn": 9,
+                  "endLine": 69,
+                  "endColumn": 37,
+                  "snippet": {
+                    "text": "        exec(exec_string, globals()) # importlib code path miss things\n"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 68,
+                  "endLine": 70,
+                  "snippet": {
+                    "text": "        # print(exec_string)\n        exec(exec_string, globals()) # importlib code path miss things\n        # print(globals())\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_severity": "MEDIUM",
+            "issue_confidence": "HIGH"
+          }
+        },
+        {
+          "ruleId": "glog-584014c3-a0b8-46ea-8eaf-09243a672e92",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "SQL Injection Vulnerability via String-Based Query Construction"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "v2python/tuning_database.py"
+                },
+                "region": {
+                  "startLine": 104,
+                  "startColumn": 34,
+                  "endLine": 104,
+                  "endColumn": 81,
+                  "snippet": {
+                    "text": "        res = self._conn.execute(f\"SELECT DISTINCT gpu FROM {self._table_name};\")\n"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 103,
+                  "endLine": 105,
+                  "snippet": {
+                    "text": "            return\n        res = self._conn.execute(f\"SELECT DISTINCT gpu FROM {self._table_name};\")\n        self._gpu_set = set([gpu for gpu, in res.fetchall()])\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_severity": "MEDIUM",
+            "issue_confidence": "MEDIUM"
+          }
+        },
+        {
+          "ruleId": "glog-e8963ec5-4d6d-492d-b427-71e80c16e9c4",
+          "kind": "fail",
+          "level": "warning",
+          "message": {
+            "text": "Exec Usage Detected"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "v3python/compile.py"
+                },
+                "region": {
+                  "startLine": 69,
+                  "startColumn": 9,
+                  "endLine": 69,
+                  "endColumn": 37,
+                  "snippet": {
+                    "text": "        exec(exec_string, globals()) # importlib code path miss things\n"
+                  }
+                },
+                "contextRegion": {
+                  "startLine": 68,
+                  "endLine": 70,
+                  "snippet": {
+                    "text": "        # print(exec_string)\n        exec(exec_string, globals()) # importlib code path miss things\n        # print(globals())\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_severity": "MEDIUM",
+            "issue_confidence": "HIGH"
+          }
+        }
+      ],
+      "newlineSequences": [
+        "\r\n",
+        "\n"
+      ]
+    }
+  ]
+}
